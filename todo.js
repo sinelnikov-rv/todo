@@ -11,8 +11,7 @@
                 this.list.push(item);
             },
             deleteItem: function (item) {
-                this.list.splice(item,1)
-                this.deleted.push(item);
+                this.list.splice(item,1);
             },
             doneItem: function (item) {
                 this.done.push(item);
@@ -23,7 +22,7 @@ for (var i=1;i<2;) {
     if (todo.list.indexOf(item) === -1) {
         todo.addItem(item);
     } else {
-        todo.deleteItem(item);
+        todo.deleteItem(todo.list.indexOf(item));
     }
     var answer;
     answer = confirm("Желаете продолжить");
