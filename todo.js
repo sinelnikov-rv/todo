@@ -17,18 +17,20 @@
                 this.done.push(item);
             }
         };
-for (var i=1;i<2;) {
-    var item = prompt("Список дел: \n" + todo.list + "\n Введите задание в поле ниже:");
-    if (todo.list.indexOf(item) === -1) {
-        todo.addItem(item);
-    } else {
-        todo.deleteItem(todo.list.indexOf(item));
-    }
-    var answer;
-    answer = confirm("Желаете продолжить");
-    if (!answer) {
-        i++
-    }
+var text = document.getElementById("text");
+var ul = document.getElementById("list");
+button.onclick = function(){
+
+    var li = document.createElement("li");
+    console.log(text.value);
+    li.appendChild(document.createTextNode("" + text.value));
+    ul.appendChild(li);
+    li.addEventListener('click',function(){console.log("ok")});
 };
-console.log(todo.list);
-console.log(todo.deleted);
+/*
+var checked = document.getElementById("list").document.getElementsByTagName("li");
+for (var i=0; i<checked.length;i++) {
+    checked[i].addEventListener('click', function () {
+        console.log("ok")
+    }, false);
+}*/
