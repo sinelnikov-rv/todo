@@ -17,18 +17,13 @@
                 this.done.push(item);
             }
         };
-for (var i=1;i<2;) {
-    var item = prompt("Список дел: \n" + todo.list + "\n Введите задание в поле ниже:");
-    if (todo.list.indexOf(item) === -1) {
-        todo.addItem(item);
-    } else {
-        todo.deleteItem(todo.list.indexOf(item));
-    }
-    var answer;
-    answer = confirm("Желаете продолжить");
-    if (!answer) {
-        i++
-    }
+var item;
+item = document.getElementById("text").value;
+button.onclick = function(){
+    var ul = document.getElementById("list");
+    var li = document.createElement("li");
+
+    ul.appendChild(item);
+    todo.addItem(item);
+    console.log(todo.list);
 };
-console.log(todo.list);
-console.log(todo.deleted);
