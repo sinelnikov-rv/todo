@@ -19,13 +19,21 @@
         };
 var text = document.getElementById("text");
 var ul = document.getElementById("list");
-button.onclick = function(){
-
-    var li = document.createElement("li");
-    console.log(text.value);
+button.onclick = function () {
+    if(text.value == ""){
+        console.log("sdfs");
+    }else {
+        var li = document.createElement("li")
+    todo.addItem(text.value);
+        li.setAttribute("id","element ");
+    console.log(todo.list);
     li.appendChild(document.createTextNode("" + text.value));
     ul.appendChild(li);
-    li.addEventListener('click',function(){console.log("ok")});
+    li.addEventListener('click',function(){
+            li.parentNode.removeChild(li);
+        });
+    }
+    text.value = "";
 };
 /*
 var checked = document.getElementById("list").document.getElementsByTagName("li");
