@@ -1,0 +1,6 @@
+#list li{
+    list-style-type: none;
+}
+li.checked {
+    text-decoration: line-through;
+}
