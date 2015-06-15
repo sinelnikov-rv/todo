@@ -15,8 +15,8 @@ var todo = {
         }
         };
 var text = document.getElementById("text");
-var ul = document.getElementById("list");
-var ulDone = document.getElementById("doneList");
+var ulAll = document.getElementById("list");
+//var ulDone = document.getElementById("doneList");
 var clickedElement = function () {
     if(this.getAttribute("class") == "checked") {
         this.parentNode.removeChild(this);
@@ -38,7 +38,7 @@ button.onclick = function () {
         todo.addItem(text.value);
         li.setAttribute("class", "unChecked");
         li.appendChild(document.createTextNode("" + text.value));
-        ul.appendChild(li);
+        ulAll.appendChild(li);
         li.addEventListener('click', clickedElement);
     }
     console.log(todo.list);

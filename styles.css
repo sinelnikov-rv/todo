@@ -1,3 +1,7 @@
+#inputText {
+    width: 400px;
+    margin: auto;
+}
 li{
     list-style-type: none;
 }
