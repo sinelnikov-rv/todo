@@ -1,9 +1,13 @@
-#inputText {
-    width: 400px;
-    margin: auto;
+div#todoList {
+    width: 500px;
+    height: 500px;
+    margin-left:auto;
 }
 li{
     list-style-type: none;
+    margin: auto;
+    background-color: red;
+    border-bottom: solid 2px;
 }
 #list li.checked {
     text-decoration: line-through;

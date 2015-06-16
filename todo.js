@@ -16,32 +16,35 @@ var todo = {
         };
 var text = document.getElementById("text");
 var ulAll = document.getElementById("list");
-//var ulDone = document.getElementById("doneList");
 var clickedElement = function () {
     if(this.getAttribute("class") == "checked") {
-        this.parentNode.removeChild(this);
-        todo.deleteItem(todo.list.indexOf(this.textContent))
+            this.setAttribute("class","unChecked");
+       this.firstChild.checked = false
     } else {
-        var li = document.createElement("li");
+        this.firstChild.checked = true;
         this.setAttribute("class","checked");
-        li.setAttribute("class","checked");
-        li.appendChild(document.createTextNode("" + this.textContent))
-        //console.log(this.value);
-        ulDone.appendChild(li);
-        li.addEventListener('click', clickedElement);
-        todo.doneItem(this.textContent);
-    }
+        }
 };
 button.onclick = function () {
     if(text.value != "") {
+        var checkbox = document.createElement("input");
+        var buttonDel = document.createElement("input");
+        checkbox.setAttribute("type","checkbox");
         var li = document.createElement("li");
         todo.addItem(text.value);
         li.setAttribute("class", "unChecked");
+        li.appendChild(checkbox);
+        buttonDel.setAttribute("type", "button");
+        buttonDel.setAttribute("id", "buttonDel");
+        buttonDel.onclick = function () {
+            li.parentNode.removeChild(li);
+            todo.deleteItem(todo.list.indexOf(this.textContent));
+        }
         li.appendChild(document.createTextNode("" + text.value));
+        li.appendChild(buttonDel);
         ulAll.appendChild(li);
         li.addEventListener('click', clickedElement);
     }
     console.log(todo.list);
-    console.log(todo.done);
     text.value = "";
 };
