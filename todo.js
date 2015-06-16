@@ -25,8 +25,8 @@ var clickedElement = function () {
         this.setAttribute("class","checked");
         }
 };
-button.onclick = function () {
-    if(text.value != "") {
+text.onkeydown = function (key) {
+    if(text.value != "" && key.keyCode == 13) {
         var checkbox = document.createElement("input");
         var buttonDel = document.createElement("input");
         checkbox.setAttribute("type","checkbox");
@@ -44,7 +44,7 @@ button.onclick = function () {
         li.appendChild(buttonDel);
         ulAll.appendChild(li);
         li.addEventListener('click', clickedElement);
+        text.value = "";
+        console.log(todo.list);
     }
-    console.log(todo.list);
-    text.value = "";
 };
