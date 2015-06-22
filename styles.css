@@ -1,4 +1,4 @@
-div#todoList {
+#todoList {
     left:50%;
     top:50%;
     width: 300px;
@@ -6,7 +6,7 @@ div#todoList {
     margin-left: -150px;
     position: absolute;
 }
-#text {
+#textOfTask {
     border: hidden;
     border-bottom: solid 2px;
     height: 20px;
@@ -22,7 +22,7 @@ li{
     background-color: red;
     border-bottom: solid 2px;
 }
-li.checked {
+.checked {
     text-decoration: line-through;
 }
 #buttonDel{
