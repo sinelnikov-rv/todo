@@ -4,10 +4,9 @@
 var Task = function (text) {
     this.text = text;
     this.liElem = document.createElement("li");
-    this.liElem.innerHTML ="<div class='unChecked'><input type = 'checkbox'>" + this.text.value + "</div><button class ='delButton'></button>";
+    this.liElem.innerHTML ="<div class='unChecked'><input type = 'checkbox'>" + this.text.value + "</div><button class ='delButton'></button>"
     this.liElem.getElementsByClassName("unChecked")[0].addEventListener('click', this.check.bind(this));
     this.liElem.getElementsByClassName("delButton")[0].addEventListener('click', todo.deleteItem.bind(this));
-    document.getElementById('list').appendChild(this.liElem);
 };
 Task.prototype.check = function () {
     if(this.liElem.parentNode.getAttribute("id") === "list") {
@@ -31,7 +30,9 @@ var todo = {
                 }
                 else {
                     document.getElementById("alert").innerHTML = "";
+
                     var task = new Task(text);
+                    document.getElementById('list').appendChild(task.liElem);
                     todo.list.push(text.value);
 
             }
