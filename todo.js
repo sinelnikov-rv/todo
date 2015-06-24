@@ -2,30 +2,19 @@
  * Sinelnikov Roman
  */
 var Task = function (text) {
-    text = document.getElementById("textOfTask");
-    this.text=text;
+    this.text = text;
     this.liElem = document.createElement("li");
-    this.liElem.innerHTML = "<label><input type = 'checkbox'>" + this.text.value + "</label><button class ='delButton'></button>";
-};
-Task.prototype.add = function(key){
-    if(task.text.value != "" && key.keyCode == 13) {
-        console.log(task.text.value);
-
-        console.dir(this);
-        task.liElem.getElementsByTagName("label")[0].addEventListener('click', this.check);
-        document.getElementById('list').appendChild(task.liElem);
-
-
-
-        todo.addItem(task.text.value);
-        console.log(todo.list);
-        task.text.value = "";
-    }
+    this.liElem.innerHTML = "<label class='unChecked'><input type = 'checkbox'>" + this.text.value + "</label><button class ='delButton'></button>";
+    this.liElem.getElementsByTagName("label")[0].addEventListener('click', this.check);
+    this.liElem.getElementsByClassName("delButton")[0].addEventListener('click', todo.deleteItem)
+    document.getElementById('list').appendChild(this.liElem);
 };
 Task.prototype.check = function () {
+    console.log(this);
+    console.log(this.firstChild);
     if (this.getAttribute("class") == "checked") {
         this.setAttribute("class","unChecked");
-        this.firstChild.checked = false
+        this.firstChild.checked = false;
     } else {
         this.firstChild.checked = true;
         this.setAttribute("class","checked");
@@ -39,15 +28,26 @@ Task.prototype.del = function (){
 var todo = {
     list : [],
     done: [],
-    addItem: function () {
-        var task = new Task();
-        //this.list.push(item);
+    addItem: function (key) {
+        var text = document.getElementById("textOfTask");
+            if (text.value !== "" && +key.keyCode === 13) {
+                if(todo.list.indexOf(text.value) > -1 ) {
+                    document.getElementById("alert").innerHTML = "<p>такой элемент уже существует</p>";
+                }
+                else {
+                    document.getElementById("alert").innerHTML = "";
+                    var task = new Task(text);
+                    todo.list.push(text.value);
+
+            }
+                text.value = "";
+        }
     },
     deleteItem: function (item) {
         this.list.splice(item, 1);
     }
 };
-document.getElementById('textOfTask').onkeydown = todo.addItem();
+document.getElementById('textOfTask').onkeydown = todo.addItem;
 //document.getElementsByClassName("delButton").onclick = task.del;
 //Task.prototype.check = func
 
