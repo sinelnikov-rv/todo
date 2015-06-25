@@ -1,9 +1,13 @@
 #todoList {
     left:50%;
     top:50%;
-    width: 300px;
+    width: 500px;
     margin-top: -10px;
-    margin-left: -150px;
+    margin-left: -250px;
+    position: absolute;
+}
+p {
+    margin-top: -20px;
     position: absolute;
 }
 #textOfTask {
@@ -11,12 +15,12 @@
     border-bottom: solid 2px;
     height: 20px;
     margin: 0px;
-    width: 250px;
+    width: 450px;
     padding: 0px;
 }
 li {
     word-break: break-all;
-    width:300px;
+    width:250px;
     list-style-type: none;
     margin: 5px;
     background-color: red;
