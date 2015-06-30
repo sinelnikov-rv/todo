@@ -1,14 +1,25 @@
 /**
- * Sinelnikov Roman
- */
-var Task = function (text) {
+* Sinelnikov Roman
+*/
+var Task = function (text, listName) {
+    this.id = new Date().valueOf();
     this.text = text;
+    this.check = false;
+    this.list = listName;
     this.liElem = document.createElement("li");
     this.liElem.innerHTML ="<div class='unChecked'><input type = 'checkbox'>" + this.text + "</div><button class ='delButton'>del</button>";
-    this.liElem.getElementsByClassName("unChecked")[0].addEventListener('click', this.check.bind(this));
+    //this.liElem.getElementsByClassName("unChecked")[0].addEventListener('click', this.check.bind(this));
     this.liElem.getElementsByClassName("delButton")[0].addEventListener('click', this.del.bind(this));
 };
+/*
 Task.prototype.check = function () {
+    if (this.check) {
+        this.check = false;
+    } else {
+        this.check = true;
+    }
+
+
     if(this.liElem.getElementsByTagName("div")[0].getAttribute("class") === "unChecked") {
         this.liElem.getElementsByTagName("input")[0].checked = true;
         this.liElem.getElementsByTagName("div")[0].setAttribute("class","checked");
@@ -29,9 +40,13 @@ Task.prototype.check = function () {
         this.liElem.removeChild(this.liElem.getElementsByClassName("move")[0]);
     }
 };
-Task.prototype.move = function () {
+Task.prototype.move = function (oldList, newList) {
+
+    oldlist.deleteItem(this.liElem);
+    newlist.push(this.liElem);
+
     if(this.liElem.parentNode.getAttribute("id") === "list"){
-        var doneTask = new Task(this.liElem.childNodes[0].textContent);
+        //var doneTask = new Task(this.liElem.childNodes[0].textContent);
         document.getElementById('list_1').appendChild(doneTask.liElem);
         done.list.push(this.liElem.childNodes[0].textContent);
         todo.deleteItem(this.liElem);
@@ -42,39 +57,41 @@ Task.prototype.move = function () {
         todo.list.push(this.liElem.childNodes[0].textContent);
         done.deleteItem(this.liElem);
     }
-};
+ };
+*/
+
+
+
 Task.prototype.del = function () {
-    if (this.liElem.parentNode.getAttribute("id") === "list"){
-        todo.deleteItem(this.liElem);
+    var listName = this.list;
+    if(listName === 'todo') {
+        todo.deleteItem(this);
     }
     else {
-        done.deleteItem(this.liElem);
+        done.deleteItem(this);
     }
 };
 var todo = {
     list : [],
-    addItem: function(key) {
-        var text = document.getElementById("textOfTask");
-            if (text.value !== "" && +key.keyCode === 13) {
-                if(todo.list.indexOf(text.value) > -1 || done.list.indexOf(text.value) > -1) {
-                    document.getElementById("alert").innerHTML = "<p>такой элемент уже существует</p>";
-                }
-                else {
-                    document.getElementById("alert").innerHTML = "";
-                    var task = new Task(text.value);
-                    document.getElementById('list').appendChild(task.liElem);
-                    todo.list.push(text.value);
-            }
-                text.value = "";
-        }
+    addItem: function(textOfTask) {
+        var task = new Task(textOfTask.value, 'todo');
+        console.log(todo.list[0]);
+        todo.list.push(task);
+        console.log(task);
+        document.getElementById('list').appendChild(task.liElem);
+        console.log(todo.list.indexOf(task.text));
+        console.dir(todo.list);
     },
     deleteItem: function (item) {
-        item.parentNode.removeChild(item);
-        item = todo.list.indexOf(item.childNodes[0].textContent);
+        //console.log(item.liElem);
+        item.liElem.parentNode.removeChild(item.liElem);
+        var item = todo.list.indexOf(item.id);
         todo.list.splice(item, 1);
+        console.dir(todo.list);
     }
 };
-var done = {
+
+/*var done = {
     list: [],
     addItem: function () {
         var text = document.getElementById("textOfTask");
@@ -96,6 +113,30 @@ var done = {
         item = done.list.indexOf(item.childNodes[0].textContent);
         done.list.splice(item, 1);
     }
-};
-document.getElementById('textOfTask').onkeydown = todo.addItem;
-document.getElementById('add').onclick = done.addItem;
+};*/
+document.getElementById('textOfTask').onkeydown = addElem;
+function addElem(key) {
+    var text = document.getElementById("textOfTask");
+    if (text.value !== "" && +key.keyCode === 13) {
+        if (todo.list.indexOf(Task.text) > -1 /*|| done.list.indexOf(text.value) > -1*/) {
+            document.getElementById("alert").innerHTML = "<p>такой элемент уже существует</p>";
+        }
+        else {
+            document.getElementById("alert").innerHTML = "";
+            todo.addItem(text);
+
+        }
+        //text.value = "";
+    }
+}
+//document.getElementById('add').onclick = done.addItem;
+
+
+/*
+function listenters(task, todo, done) {
+    task.liElem.addEventListener('click', function () {
+        bind(task)
+        task.move(todo.list, )
+    })
+// add all event listeners
+}*/
