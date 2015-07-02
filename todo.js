@@ -100,15 +100,15 @@ function listeners(task) {
     task.liElem.getElementsByClassName("unChecked")[0].addEventListener('click', function () {
         task.check();
     });
+    task.liElem.addEventListener('mousedown', function(){
+        task.drag();
+    });
     task.liElem.getElementsByClassName("delButton")[0].addEventListener('click', function () {
         if(task.list === 'todo') {
             task.del(todo);
         } else {
             task.del(done);
         }
-    });
-    task.liElem.getElementsByClassName("unChecked")[0].addEventListener('onmousedown', function () {
-        task.drag(task);
     });
 }
 function listenersMove(task){
@@ -127,21 +127,46 @@ function listenersMove(task){
     });
 }
 
-Task.prototype.drag = function (e) {
-    console.log(this);
-    this.liElem.style.position = 'absolute';
+
+Task.prototype.drag = function(e){
+    var li = this.liElem;
+    console.log(li);
+    var coords = getCoords(li);
+    var shiftX = e.pageX - coords.left;
+    var shiftY = e.pageY - coords.top;
+
+    li.style.position = 'absolute';
+    document.body.appendChild(li);
     moveAt(e);
-    document.body.appendChild(this.liElem);
-    this.liElem.style.zIndex = 1000;
+
+    li.style.zIndex = 1000;
+
     function moveAt(e) {
-        this.liElem.style.left = e.pageX - this.liElem.offsetWidth / 2 + 'px';
-        this.liElem.style.top = e.pageY - this.liElem.offsetHeight / 2 + 'px';
+        li.style.left = e.pageX - shiftX + 'px';
+        li.style.top = e.pageY - shiftY + 'px';
     }
+
     document.onmousemove = function(e) {
         moveAt(e);
     };
-    this.liElem.onmouseup = function() {
+
+    li.onmouseup = function() {
         document.onmousemove = null;
-        this.liElem.onmouseup = null;
-    }
-};
+        li.onmouseup = null;
+    };
+    li.ondragstart = function() {
+        return false;
+    };
+}
+
+function getCoords(elem) {
+
+    var box = elem.getBoundingClientRect();
+    console.log(box.top+pageYOffset);
+    return {
+        top: box.top + pageYOffset,
+        left: box.left + pageXOffset
+    };
+
+}
+
