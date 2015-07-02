@@ -7,7 +7,7 @@ var Task = function (text, listName) {
     this.checked = false;
     this.list = listName;
     this.liElem = document.createElement("li");
-    this.liElem.innerHTML ="<div class='unChecked'><input type = 'checkbox'>" + this.text + "</div><button class ='delButton'>del</button>";
+    this.liElem.innerHTML ='<div class="unChecked"><input type = "checkbox">' + this.text + '</div><div class="drag"> </div><button class ="delButton">del</button>';
 };
 Task.prototype.check = function () {
     if (this.checked) {
@@ -100,8 +100,8 @@ function listeners(task) {
     task.liElem.getElementsByClassName("unChecked")[0].addEventListener('click', function () {
         task.check();
     });
-    task.liElem.addEventListener('mousedown', function(){
-        task.drag();
+    task.liElem.getElementsByClassName("drag")[0].addEventListener('mousedown', function(){
+        task.drag(task);
     });
     task.liElem.getElementsByClassName("delButton")[0].addEventListener('click', function () {
         if(task.list === 'todo') {
@@ -129,44 +129,48 @@ function listenersMove(task){
 
 
 Task.prototype.drag = function(e){
-    var li = this.liElem;
-    console.log(li);
-    var coords = getCoords(li);
-    var shiftX = e.pageX - coords.left;
-    var shiftY = e.pageY - coords.top;
-
-    li.style.position = 'absolute';
-    document.body.appendChild(li);
-    moveAt(e);
-
-    li.style.zIndex = 1000;
-
-    function moveAt(e) {
-        li.style.left = e.pageX - shiftX + 'px';
-        li.style.top = e.pageY - shiftY + 'px';
-    }
-
-    document.onmousemove = function(e) {
+    var self = this;
+        var elem = this.liElem;
+        var start = elem.getBoundingClientRect();
+        elem.style.position = 'absolute';
         moveAt(e);
-    };
+        document.body.appendChild(elem);
+        elem.style.zIndex = 1000;
+        function moveAt(e) {
+            elem.style.left = e.pageX - elem.offsetWidth / 2 + 'px';
+            elem.style.top = e.pageY - elem.offsetHeight / 2 + 'px';
+        }
+        document.onmousemove = function(e) {
+            moveAt(e);
+        };
+        elem.onmouseup = function() {
+            var end = elem.getBoundingClientRect().left;
+            var offset = end - start.left;
+            console.log(document.body.clientWidth / 2);
+            console.log(end);
+            console.log(start.left);
+            console.log(offset);
+            if (end > document.body.clientWidth / 2 && offset > 250) {
+                self.list = 'done';
 
-    li.onmouseup = function() {
-        document.onmousemove = null;
-        li.onmouseup = null;
-    };
-    li.ondragstart = function() {
-        return false;
-    };
-}
+                self.move(todo, done);
+                elem.removeAttribute('style');
+                document.getElementById('list_1').appendChild(elem);
 
-function getCoords(elem) {
-
-    var box = elem.getBoundingClientRect();
-    console.log(box.top+pageYOffset);
-    return {
-        top: box.top + pageYOffset,
-        left: box.left + pageXOffset
+            } else if (end < document.body.clientWidth / 2 && offset < -250) {
+                self.list = 'todo';
+                self.move(done, todo);
+                elem.removeAttribute('style');
+                document.getElementById('list').appendChild(elem);
+            }
+            else {
+                elem.left = start.left;
+                elem.top = start.top;
+            }
+            document.onmousemove = null;
+            elem.onmouseup = null;
+            //console.dir(todo.list);
+            //console.dir(done.list);
+        }
     };
-
-}
 
