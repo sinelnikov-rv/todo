@@ -7,7 +7,8 @@ var Task = function (text, listName) {
     this.checked = false;
     this.list = listName;
     this.liElem = document.createElement("li");
-    this.liElem.innerHTML ='<div class="unChecked"><input type = "checkbox">' + this.text + '</div><div class="drag"> </div><button class ="delButton">del</button>';
+    this.liElem.setAttribute('class','draggable');
+    this.liElem.innerHTML ='<div class="unChecked"><input type = "checkbox">' + this.text + '</div><button class ="delButton">del</button>';
 };
 Task.prototype.check = function () {
     if (this.checked) {
@@ -81,15 +82,13 @@ function addElem(event) {
 }
 var textExists = false;
 var lists = [todo.list, done.list];
-function textExist(text)
-{
+function textExist(text) {
     lists.forEach(function (list) {
-        list.forEach(function (task) {
+        list.some(function (task) {
             if (text == task.text) {
-                textExists = true;
                 document.getElementById("alert").innerHTML = "<p>такой элемент уже существует</p>";
-            }
-            else{
+                return textExists = true;
+            } else {
                 textExists = false;
                 document.getElementById("alert").innerHTML = "";
             }
@@ -100,7 +99,7 @@ function listeners(task) {
     task.liElem.getElementsByClassName("unChecked")[0].addEventListener('click', function () {
         task.check();
     });
-    task.liElem.getElementsByClassName("drag")[0].addEventListener('mousedown', function(){
+    task.liElem.addEventListener('mousedown', function(){
         task.drag(task);
     });
     task.liElem.getElementsByClassName("delButton")[0].addEventListener('click', function () {
@@ -127,7 +126,7 @@ function listenersMove(task){
     });
 }
 
-
+/*
 Task.prototype.drag = function(e){
     var self = this;
         var elem = this.liElem;
@@ -173,4 +172,177 @@ Task.prototype.drag = function(e){
             //console.dir(done.list);
         }
     };
+    */
+Task.prototype.drag = function() {
+    if (this.list === 'todo'){
+        var oldList = todo;
+        var newList = done;
+        var listText = 'done';
+        document.getElementById('list_1').setAttribute('class','droppable');
+    } else {
+        document.getElementById('list').setAttribute('class','droppable');
+        oldList = done;
+        newList = todo;
+        listText = 'todo';
+    }
+    /**
+     * составной объект для хранения информации о переносе:
+     * {
+   *   elem - элемент, на котором была зажата мышь
+   *   avatar - аватар
+   *   downX/downY - координаты, на которых был mousedown
+   *   shiftX/shiftY - относительный сдвиг курсора от угла элемента
+   * }
+     */
+    var dragObject = {};
+    var task = this;
+    var self = this.liElem;
+    function onMouseDown(e) {
 
+        if (e.which != 1) return;
+
+        var elem = e.target.closest('.draggable');
+        if (!elem) return;
+
+        dragObject.elem = elem;
+
+        // запомним, что элемент нажат на текущих координатах pageX/pageY
+        dragObject.downX = e.pageX;
+        dragObject.downY = e.pageY;
+
+        return false;
+    }
+
+    function onMouseMove(e) {
+        if (!dragObject.elem) return; // элемент не зажат
+
+        if (!dragObject.avatar) { // если перенос не начат...
+            var moveX = e.pageX - dragObject.downX;
+            var moveY = e.pageY - dragObject.downY;
+
+            // если мышь передвинулась в нажатом состоянии недостаточно далеко
+            if (Math.abs(moveX) < 3 && Math.abs(moveY) < 3) {
+                return;
+            }
+
+            // начинаем перенос
+            dragObject.avatar = createAvatar(e); // создать аватар
+            if (!dragObject.avatar) { // отмена переноса, нельзя "захватить" за эту часть элемента
+                dragObject = {};
+                return;
+            }
+
+            // аватар создан успешно
+            // создать вспомогательные свойства shiftX/shiftY
+            var coords = getCoords(dragObject.avatar);
+            dragObject.shiftX = dragObject.downX - coords.left;
+            dragObject.shiftY = dragObject.downY - coords.top;
+
+            startDrag(e); // отобразить начало переноса
+        }
+
+        // отобразить перенос объекта при каждом движении мыши
+        dragObject.avatar.style.left = e.pageX - dragObject.shiftX + 'px';
+        dragObject.avatar.style.top = e.pageY - dragObject.shiftY + 'px';
+
+        return false;
+    }
+
+    function onMouseUp(e) {
+        if (dragObject.avatar) { // если перенос идет
+            finishDrag(e);
+        }
+
+        // перенос либо не начинался, либо завершился
+        // в любом случае очистим "состояние переноса" dragObject
+        dragObject = {};
+    }
+
+    function finishDrag(e) {
+        var dropElem = findDroppable(e);
+
+        if (!dropElem) {
+            self.onDragCancel(dragObject);
+        } else {
+            self.onDragEnd(dragObject, dropElem, oldList, newList);
+        }
+    }
+
+    function createAvatar(e) {
+
+        // запомнить старые свойства, чтобы вернуться к ним при отмене переноса
+        var avatar = dragObject.elem;
+        var old = {
+            parent: avatar.parentNode,
+            nextSibling: avatar.nextSibling,
+            position: avatar.position || '',
+            left: avatar.left || '',
+            top: avatar.top || '',
+            zIndex: avatar.zIndex || ''
+        };
+
+        // функция для отмены переноса
+        avatar.rollback = function() {
+            old.parent.insertBefore(avatar, old.nextSibling);
+            avatar.style.position = old.position;
+            avatar.style.left = old.left;
+            avatar.style.top = old.top;
+            avatar.style.zIndex = old.zIndex
+        };
+
+        return avatar;
+    }
+
+    function startDrag(e) {
+        var avatar = dragObject.avatar;
+
+        // инициировать начало переноса
+        document.body.appendChild(avatar);
+        avatar.style.zIndex = 9999;
+        avatar.style.position = 'absolute';
+    }
+
+    function findDroppable(event) {
+        // спрячем переносимый элемент
+        dragObject.avatar.hidden = true;
+
+        // получить самый вложенный элемент под курсором мыши
+        var elem = document.elementFromPoint(event.clientX, event.clientY);
+
+        // показать переносимый элемент обратно
+        dragObject.avatar.hidden = false;
+
+        if (elem == null) {
+            // такое возможно, если курсор мыши "вылетел" за границу окна
+            return null;
+        }
+
+        return elem.closest('.droppable');
+    }
+
+    document.onmousemove = onMouseMove;
+    document.onmouseup = onMouseUp;
+    document.onmousedown = onMouseDown;
+
+    self.onDragEnd = function(dragObject, dropElem){
+        task.move(oldList,newList);
+        dropElem.appendChild(dragObject.elem);
+        dragObject.elem.removeAttribute('style');
+        task.list=listText;
+    };
+    self.onDragCancel = function(dragObject) {
+        dragObject.avatar.rollback();
+    };
+
+};
+
+
+function getCoords(elem) { // кроме IE8-
+    var box = elem.getBoundingClientRect();
+
+    return {
+        top: box.top + pageYOffset,
+        left: box.left + pageXOffset
+    };
+
+}
