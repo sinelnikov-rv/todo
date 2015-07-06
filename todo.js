@@ -178,9 +178,11 @@ Task.prototype.drag = function() {
         var oldList = todo;
         var newList = done;
         var listText = 'done';
+        var ul = 'list_1';
         document.getElementById('list_1').setAttribute('class','droppable');
     } else {
         document.getElementById('list').setAttribute('class','droppable');
+        ul = 'list';
         oldList = done;
         newList = todo;
         listText = 'todo';
@@ -329,8 +331,10 @@ Task.prototype.drag = function() {
         dropElem.appendChild(dragObject.elem);
         dragObject.elem.removeAttribute('style');
         task.list=listText;
+        document.getElementById(ul).removeAttribute('class');
     };
     self.onDragCancel = function(dragObject) {
+        document.getElementById(ul).removeAttribute('class');
         dragObject.avatar.rollback();
     };
 
