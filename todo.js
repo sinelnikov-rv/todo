@@ -31,6 +31,9 @@ Task.prototype.check = function () {
 Task.prototype.move = function (oldList,newList) {
         newList.list.push(this);
         oldList.deleteItem(this);
+    if(newList==done){
+        doneListActions();
+    }
 };
 
 Task.prototype.del = function (listName){
@@ -57,10 +60,11 @@ var done = {
         listeners(doneTask);
                 document.getElementById('list_1').appendChild(doneTask.liElem);
                 done.list.push(doneTask);
+        console.log(done.list.length);
     },
     deleteItem: function (item) {
         item.liElem.parentNode.removeChild(item.liElem);
-        done.list.splice(done.list.indexOf(item.id), 1);
+        done.list.splice(done.list.indexOf(item), 1);
     }
 };
 
@@ -71,11 +75,8 @@ function addElem(event) {
     var text = document.getElementById("textOfTask");
     if (text.value && +event.keyCode === 13 ||text.value && event.type === 'click') {
         textExist(text.value);
-        if (!textExists && event.keyCode === 13) {
+        if (!textExists) {
             todo.addItem(text.value);
-            text.value = "";
-        } else if(!textExists && event.type === 'click') {
-            done.addItem(text.value);
             text.value = "";
         }
     }
@@ -110,21 +111,67 @@ function listeners(task) {
         }
     });
 }
-function listenersMove(task){
-    task.liElem.getElementsByClassName("move")[0].addEventListener('click', function(){
-        if(task.list === 'todo'){
+function listenersMove(task) {
+    task.liElem.getElementsByClassName("move")[0].addEventListener('click', function () {
+        if (task.list === 'todo') {
             task.list = 'done';
             task.check();
-            task.move(todo,done);
+            task.move(todo, done);
             document.getElementById('list_1').appendChild(task.liElem);
+            doneListActions();
         } else {
-                task.list = 'todo';
+            task.list = 'todo';
             task.check();
-            task.move(done,todo);
+            task.move(done, todo);
             document.getElementById('list').appendChild(task.liElem);
-            }
+        }
     });
 }
+var actionBar=false;
+function doneListActions(){
+    if(done.list.length>0){
+        var actionElements=document.createElement("div");
+        if(!actionBar) {
+            actionElements.setAttribute("id", "actionElements");
+            actionElements.innerHTML = '<input type="checkbox" class="checkAll">select all<button class="deleteAll">dellAll</button>';
+            document.getElementById("doneList").appendChild(actionElements);
+            doneListActionsListeners();
+            actionBar = true;
+        }
+    }
+    else {
+        document.getElementById("actionElements").parentNode.removeChild(document.getElementById("actionElements"));
+        actionBar=false;
+    }
+}
+function doneListActionsListeners (){
+    document.getElementsByClassName("checkAll")[0].addEventListener('click', function(){
+        if(document.getElementsByClassName("checkAll")[0].checked===true){
+            done.list.forEach(function(item){
+                item.checked=false;
+                item.check();
+            }
+        )
+    } else {
+            done.list.forEach(function(item){
+                item.checked=true;
+                item.check();
+        }
+            )
+        }
+}
+    );
+    document.getElementsByClassName("deleteAll")[0].addEventListener('click', function(){
+        done.list.forEach(function(item){
+            if(item.checked){
+                done.deleteItem(item);
+            }
+            console.log(done.list)
+        })
+    })
+}
+
+
 
 /*
 Task.prototype.drag = function(e){
