@@ -63,8 +63,10 @@ var done = {
         console.log(done.list.length);
     },
     deleteItem: function (item) {
+        console.log(done.list.indexOf(item));
         item.liElem.parentNode.removeChild(item.liElem);
         done.list.splice(done.list.indexOf(item), 1);
+        doneListActions();
     }
 };
 
@@ -148,27 +150,27 @@ function doneListActionsListeners (){
     document.getElementsByClassName("checkAll")[0].addEventListener('click', function(){
         if(document.getElementsByClassName("checkAll")[0].checked===true){
             done.list.forEach(function(item){
-                item.checked=false;
-                item.check();
+                    if(!item.checked) {
+                        item.check();
+                    }
             }
         )
     } else {
             done.list.forEach(function(item){
-                item.checked=true;
-                item.check();
+                if(item.checked) {
+                    item.check();
+                }
         }
             )
         }
 }
     );
     document.getElementsByClassName("deleteAll")[0].addEventListener('click', function(){
-        done.list.forEach(function(item){
-            if(item.checked){
-                done.deleteItem(item);
-            }
-            console.log(done.list)
+                var item;
+                for(item = done.list.length-1; item >=0; --item){
+                done.deleteItem(done.list[item]);
+                   }
         })
-    })
 }
 
 
